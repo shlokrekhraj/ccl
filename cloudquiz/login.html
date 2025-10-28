@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CloudQuiz - Sign In</title>
+  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="theme-toggle" onclick="toggleTheme()">
+    <i class="fas fa-moon" id="theme-icon"></i>
+  </div>
+
+  <header class="hero-section">
+    <div class="hero-content">
+      <h1 class="hero-title">
+        <i class="fas fa-cloud"></i> CloudQuiz
+        <span class="version-badge">v2.0</span>
+      </h1>
+      <p class="hero-subtitle">Secure Access to Your Cloud Learning Platform</p>
+    </div>
+  </header>
+
+  <main class="main-container">
+    <section class="card start-card">
+      <div class="card-header">
+        <h2><i class="fas fa-sign-in-alt"></i> Welcome Back</h2>
+        <p class="card-description">Sign in to continue your cloud journey</p>
+      </div>
+
+      <div class="auth-section">
+        <div class="auth-tabs">
+          <button class="auth-tab active" onclick="showAuthTab('signin')">Sign In</button>
+          <button class="auth-tab" onclick="showAuthTab('signup')">Sign Up</button>
+        </div>
+
+        <div id="signinForm" class="auth-form">
+          <div class="form-group">
+            <label for="signinEmail"><i class="fas fa-envelope"></i> Email</label>
+            <input type="email" id="signinEmail" placeholder="Enter your email" required>
+          </div>
+          <div class="form-group">
+            <label for="signinPassword"><i class="fas fa-lock"></i> Password</label>
+            <input type="password" id="signinPassword" placeholder="Enter your password" required>
+          </div>
+          <button class="auth-btn" onclick="handleSignIn()">
+            <i class="fas fa-sign-in-alt"></i> Sign In
+          </button>
+        </div>
+
+        <div id="signupForm" class="auth-form hidden">
+          <div class="form-group">
+            <label for="signupName"><i class="fas fa-user"></i> Full Name</label>
+            <input type="text" id="signupName" placeholder="Enter your full name" required>
+          </div>
+          <div class="form-group">
+            <label for="signupEmail"><i class="fas fa-envelope"></i> Email</label>
+            <input type="email" id="signupEmail" placeholder="Enter your email" required>
+          </div>
+          <div class="form-group">
+            <label for="signupPassword"><i class="fas fa-lock"></i> Password</label>
+            <input type="password" id="signupPassword" placeholder="Create a password" required>
+          </div>
+          <button class="auth-btn" onclick="handleSignUp()">
+            <i class="fas fa-user-plus"></i> Sign Up
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-content">
+      <p>&copy; 2024 CloudQuiz. All rights reserved. | Powered by Firebase</p>
+    </div>
+  </footer>
+
+  <script type="module" src="script.js"></script>
+  
+</body>
+</html>

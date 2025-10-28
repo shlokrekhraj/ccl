@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CloudQuiz - Professional Cloud Computing Assessment</title>
+  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <!-- Theme toggle -->
+  <div class="theme-toggle" onclick="toggleTheme()">
+    <i class="fas fa-moon" id="theme-icon"></i>
+  </div>
+
+  <!-- Header -->
+  <header class="hero-section">
+    <div class="hero-content">
+      <h1 class="hero-title">
+        <i class="fas fa-cloud"></i>
+        CloudQuiz
+        <span class="version-badge">v2.0</span>
+      </h1>
+      <p class="hero-subtitle">Master Cloud Computing • Professional Assessment Platform</p>
+
+      <!-- Quick stats -->
+      <div class="stats-preview">
+        <div class="stat-item">
+          <i class="fas fa-users"></i>
+          <span id="total-students">1,247</span>
+          <label>Students</label>
+        </div>
+        <div class="stat-item">
+          <i class="fas fa-trophy"></i>
+          <span id="avg-score">87%</span>
+          <label>Avg Score</label>
+        </div>
+        <div class="stat-item">
+          <i class="fas fa-clock"></i>
+          <span>10 min</span>
+          <label>Duration</label>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Sign-out button (visible only when logged in) -->
+  <div id="userProfile" class="user-profile hidden" style="position:fixed;top:20px;left:20px;z-index:1000;">
+    <div class="profile-info">
+      <div class="profile-avatar"><i class="fas fa-user-circle"></i></div>
+      <div class="profile-details">
+        <h3 id="userDisplayName">User</h3>
+        <span class="user-role" id="userRole">Student</span>
+      </div>
+      <button class="signout-btn" onclick="signOutUser()">
+        <i class="fas fa-sign-out-alt"></i> Sign Out
+      </button>
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <main class="main-container">
+
+    <!-- 1. START SCREEN -->
+    <section id="userSection" class="card start-card">
+      <div class="card-header">
+        <h2><i class="fas fa-play-circle"></i> Start Your Assessment</h2>
+        <p class="card-description">Join thousands of professionals mastering cloud computing</p>
+      </div>
+
+      <div class="form-group">
+        <label for="username"><i class="fas fa-user"></i> Full Name</label>
+        <input type="text" id="username" placeholder="Enter your full name" required>
+      </div>
+
+      <div class="form-group">
+        <label for="quizSelect"><i class="fas fa-graduation-cap"></i> Select Assessment</label>
+        <select id="quizSelect">
+          <option value="cloud_basics">Cloud Computing Basics</option>
+        </select>
+      </div>
+
+      <button class="start-btn" onclick="startQuiz()">
+        <i class="fas fa-play"></i> Start Quiz
+      </button>
+
+      <!-- Admin login -->
+      <div class="admin-login">
+        <div class="form-group">
+          <label for="adminKey"><i class="fas fa-key"></i> Admin Access Key</label>
+          <input type="password" id="adminKey" placeholder="Enter admin key">
+        </div>
+        <button class="admin-btn" onclick="loadResults()">
+          <i class="fas fa-unlock"></i> Access Dashboard
+        </button>
+        <p class="admin-hint">
+          <i class="fas fa-info-circle"></i>
+          Admin key: <code>VIT_AdminKey_2025ava@123</code>
+        </p>
+      </div>
+
+      <!-- Admin stats (hidden until key entered) -->
+      <div id="adminStats" class="admin-stats hidden">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-users"></i></div>
+            <div class="stat-content">
+              <span id="totalAttempts" class="stat-number">0</span>
+              <span class="stat-label">Total Attempts</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+            <div class="stat-content">
+              <span id="averageScore" class="stat-number">0%</span>
+              <span class="stat-label">Average Score</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-trophy"></i></div>
+            <div class="stat-content">
+              <span id="bestScore" class="stat-number">0</span>
+              <span class="stat-label">Best Score</span>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-clock"></i></div>
+            <div class="stat-content">
+              <span id="avgTime" class="stat-number">0:00</span>
+              <span class="stat-label">Avg Time</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results table (hidden until admin logs in) -->
+      <div class="table-container hidden" id="resultsWrap">
+        <div class="table-header">
+          <h3><i class="fas fa-table"></i> Recent Results</h3>
+          <div class="table-controls">
+            <button class="control-btn" onclick="exportResults()"><i class="fas fa-download"></i> Export</button>
+            <button class="control-btn" onclick="refreshResults()"><i class="fas fa-sync"></i> Refresh</button>
+            <button class="control-btn" onclick="clearAllResults()" style="background:var(--error-color);color:white;">
+              <i class="fas fa-trash"></i> Clear All
+            </button>
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table id="resultsTable">
+            <thead>
+              <tr>
+                <th><i class="fas fa-user"></i> Student</th>
+                <th><i class="fas fa-chart-bar"></i> Score</th>
+                <th><i class="fas fa-percentage"></i> Percentage</th>
+                <th><i class="fas fa-clock"></i> Time</th>
+                <th><i class="fas fa-calendar"></i> Date</th>
+                <th><i class="fas fa-cog"></i> Actions</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. QUIZ SECTION (THIS WAS MISSING) -->
+    <section id="quizSection" class="card hidden">
+      <div class="card-header">
+        <h2><i class="fas fa-question-circle"></i> Question <span id="question-number">1</span></h2>
+        <div class="quiz-meta">
+          <div class="meta-item">
+            <i class="fas fa-user"></i> <span id="username-display"></span>
+          </div>
+          <div class="meta-item">
+            <i class="fas fa-clock"></i> <span id="timer-text">10:00</span>
+          </div>
+          <div class="meta-item">
+            <i class="fas fa-trophy"></i> <span id="correct-count">0</span> / <span id="incorrect-count">0</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="progress-container">
+        <div class="progress-bar">
+          <div id="progressBar" class="progress-fill" style="width: 0%"></div>
+        </div>
+        <p class="progress-text" id="progressText">Question 1 of 10</p>
+      </div>
+
+      <div class="question-container">
+        <h3 id="questionText">Loading question...</h3>
+        <div id="options" class="options-grid"></div>
+      </div>
+
+      <div class="quiz-controls">
+        <button id="prevBtn" class="nav-btn" onclick="prevQuestion()">
+          <i class="fas fa-arrow-left"></i> Previous
+        </button>
+        <div class="middle-controls">
+          <button class="action-btn hint" onclick="showHint()">
+            <i class="fas fa-lightbulb"></i> Hint
+          </button>
+          <button class="action-btn flag" onclick="flagQuestion()">
+            <i class="fas fa-flag"></i> Flag
+          </button>
+        </div>
+        <button id="nextBtn" class="nav-btn primary" onclick="nextQuestion()">
+          Next Question <i class="fas fa-arrow-right"></i>
+        </button>
+      </div>
+    </section>
+
+    <!-- 3. RESULT SECTION (THIS WAS ALSO MISSING) -->
+    <section id="resultSection" class="card hidden">
+      <div class="card-header">
+        <h2><i class="fas fa-trophy"></i> Quiz Complete!</h2>
+        <p id="resultText" class="card-description">Well done!</p>
+      </div>
+
+      <div class="result-summary">
+        <div class="result-item">
+          <span class="label">Score</span>
+          <span class="value"><span id="score-fraction">0/10</span></span>
+        </div>
+        <div class="result-item">
+          <span class="label">Percentage</span>
+          <span class="value"><span id="score-percentage">0%</span></span>
+        </div>
+        <div class="result-item">
+          <span class="label">Time Taken</span>
+          <span class="value"><span id="time-taken">0:00</span></span>
+        </div>
+        <div class="result-item">
+          <span class="label">Accuracy</span>
+          <span class="value"><span id="final-accuracy">0%</span></span>
+        </div>
+        <div class="result-item">
+          <span class="label">Performance</span>
+          <span class="value"><span id="performance-level">—</span></span>
+        </div>
+      </div>
+
+      <div class="result-actions">
+        <button class="action-btn primary" onclick="downloadCertificate()">
+          <i class="fas fa-certificate"></i> Download Certificate
+        </button>
+        <button class="action-btn" onclick="reviewAnswers()">
+          <i class="fas fa-eye"></i> Review Answers
+        </button>
+        <button class="action-btn" onclick="restartQuiz()">
+          <i class="fas fa-redo"></i> Try Again
+        </button>
+      </div>
+
+      <div id="breakdown" class="breakdown"></div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h4><i class="fas fa-cloud"></i> CloudQuiz</h4>
+        <p>Professional cloud computing assessments for modern learners.</p>
+      </div>
+      <div class="footer-section">
+        <h4>Features</h4>
+        <ul>
+          <li>Real-time Assessment</li>
+          <li>Instant Feedback</li>
+          <li>Progress Tracking</li>
+          <li>Certificates</li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h4>Support</h4>
+        <ul>
+          <li>Help Center</li>
+          <li>Contact Us</li>
+          <li>Privacy Policy</li>
+          <li>Terms of Service</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2024 CloudQuiz. All rights reserved. | Powered by Firebase</p>
+    </div>
+  </footer>
+
+  <!-- Hint modal -->
+  <div id="hintModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3><i class="fas fa-lightbulb"></i> Hint</h3>
+        <button class="close-btn" onclick="closeHint()">×</button>
+      </div>
+      <div class="modal-body">
+        <p id="hintText">This is a hint for the current question.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confetti -->
+  <div id="confetti" class="confetti hidden"></div>
+
+  <!-- Firebase + main script -->
+  <script type="module" src="script.js"></script>
+
+  <!-- Protect this page – redirect to login if not authenticated -->
+  <script type="module">
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+    const auth = getAuth();
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = 'login.html';
+      } else {
+        const profile = document.getElementById('userProfile');
+        const nameEl = document.getElementById('userDisplayName');
+        const roleEl = document.getElementById('userRole');
+        profile.classList.remove('hidden');
+        nameEl.textContent = user.displayName || user.email.split('@')[0];
+        roleEl.textContent = 'Student';
+      }
+    });
+  </script>
+  
+</body>
+</html>
